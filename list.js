@@ -47,9 +47,10 @@ class Todolist {
         return this.#todos.filter(t => !t.deleted);
     }
     find(task) {
-        const todoItem = this.#activeTodos.find((t) => t.task === task);
+        const todoItem = this.#activeTodos.find((t) => t.task.toLowerCase() === task.toLowerCase());
         if (!todoItem) {
-            throw new Error("todo not found");
+            console.error("todo not found");
+            return
         }
         return todoItem.id;
     }
@@ -69,10 +70,12 @@ class Todolist {
     done(id) {
         const todo = this.#activeTodos.find(t => t.id === Number(id));
         if (!todo) {
-            throw new Error(`Todo #${id} not found`);
+            console.error(`Todo #${id} not found`);
+            return
         }
         if (todo.completed) {
-            throw new Error(`Todo #${id} is already completed`);
+            console.error(`Todo #${id} is already completed`);
+            return
         }
         todo.completed = true;
         this.#saveTodos();
@@ -81,7 +84,8 @@ class Todolist {
     delete(id) {
         const todo = this.#activeTodos.find(t => t.id === Number(id));
         if (!todo) {
-            throw new Error(`Todo #${id} not found or already deleted`);
+            console.error(`Todo #${id} not found or already deleted`);
+            return
         }
 
         todo.deleted = true;
@@ -91,7 +95,8 @@ class Todolist {
     clear() {
         const activeTodos = this.#activeTodos;
         if (activeTodos.length === 0) {
-            throw new Error("nothing to clear");
+            console.error("nothing to clear");
+            return
         }
         this.#todos.forEach(t => t.deleted = true);
         this.#saveTodos();
@@ -100,7 +105,8 @@ class Todolist {
     list() {
         const activeTodos = this.#activeTodos;
         if (activeTodos.length === 0) {
-            throw new Error("no todos yet!");
+            console.error("no todos yet!");
+            return
         }
         console.log("Your Todos:");
         activeTodos.forEach(todo => {
