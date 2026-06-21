@@ -13,6 +13,7 @@ function jsonExists(filePath) {
 
 
 class Todolist {
+    static #lastID;
     #todos;
     constructor(filePath = "data.json") {
         if (!(filePath.endsWith(".json"))) {
@@ -20,6 +21,7 @@ class Todolist {
         }
         this.filePath = filePath;
         this.#todos = this.#loadTodos();
+        Todolist.#lastID = this.#todos.length ? Math.max(...this.#todos.map(t => t.id)) : 0;
     }
     #loadTodos() {
         try {
@@ -41,18 +43,23 @@ class Todolist {
             throw new Error(`Error saving todos: ${e.message}`);
         }
     }
+    get #activeTodos() {
+        return this.#todos.filter(t => !t.deleted);
+    }
     find(task) {
-        const todoItem = this.#todos.find((t) => t.task === task);
+        const todoItem = this.#activeTodos.find((t) => t.task === task);
         if (!todoItem) {
             throw new Error("todo not found");
         }
         return todoItem.id;
     }
     add(task) {
+        Todolist.#lastID += 1;
         const todo = {
-            id: this.#todos.length + 1,
+            id: Todolist.#lastID,
             task,
             completed: false,
+            deleted: false,
             createdAt: new Date().toISOString()
         }
         this.#todos.push(todo);
@@ -60,7 +67,7 @@ class Todolist {
         console.log("Added:", task);
     }
     done(id) {
-        const todo = this.#todos.find(t => t.id === Number(id));
+        const todo = this.#activeTodos.find(t => t.id === Number(id));
         if (!todo) {
             throw new Error(`Todo #${id} not found`);
         }
@@ -72,30 +79,32 @@ class Todolist {
         console.log(`${todo.task} marked as done! `);
     }
     delete(id) {
-        const index = this.#todos.findIndex(t => t.id === Number(id));
-        if (index === -1) {
-            throw new Error(`Todo #${id} not found`);
+        const todo = this.#activeTodos.find(t => t.id === Number(id));
+        if (!todo) {
+            throw new Error(`Todo #${id} not found or already deleted`);
         }
-        const task = this.#todos[index].task;
-        this.#todos.splice(index, 1);
+
+        todo.deleted = true;
         this.#saveTodos();
-        console.log(`"${task}" is deleted`);
+        console.log(`"${todo.task}" is deleted`);
     }
     clear() {
-        if (this.#todos.length === 0) {
+        const activeTodos = this.#activeTodos;
+        if (activeTodos.length === 0) {
             throw new Error("nothing to clear");
         }
-        this.#todos = [];
+        this.#todos.forEach(t => t.deleted = true);
         this.#saveTodos();
         console.log("all todos cleared");
     }
     list() {
-        if (this.#todos.length === 0) {
+        const activeTodos = this.#activeTodos;
+        if (activeTodos.length === 0) {
             throw new Error("no todos yet!");
         }
         console.log("Your Todos:");
-        this.#todos.forEach(todo => {
-            const status = todo.completed ? "done" : "not finished"; 
+        activeTodos.forEach(todo => {
+            const status = todo.completed ? "done" : "not finished";
             console.log(`${todo.task}  [${todo.id}]  [${status}]`);
         })
     }
