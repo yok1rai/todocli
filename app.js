@@ -15,6 +15,10 @@ async function main() {
     USAGE:
         node app.js <command> [args]
 
+    ENVIRONMENT VARIABLES
+        DEBUG              Enable DEBUG mode
+           1                    DEBUG mode enabled
+           anything else        DEBUG mode disabled
     COMMAND:
         add <task>          Add a new todo
         list                Show all todos
@@ -39,8 +43,10 @@ async function main() {
 
             case 'done': {
                 const name = process.argv[3];
+                if (!name) {
+                    throw new Error("you must specify an ID or task name");
+                }
                 let id;
-
                 if (Number.isFinite(Number(name))) {
                     id = Number(name);
 
@@ -49,14 +55,7 @@ async function main() {
                         break;
                     }
                 } else {
-                    const todoItem = todo.todos.find((t) => t.task === name);
-
-                    if (!todoItem) {
-                        console.error("Todo not found");
-                        break;
-                    }
-
-                    id = todoItem.id;
+                    id = todo.find(name);
                 }
 
                 todo.done(id);
@@ -65,6 +64,9 @@ async function main() {
 
             case 'delete': {
                 const name = process.argv[3];
+                if (!name) {
+                    throw new Error("you must specify an ID or task name");
+                }
                 let id;
 
                 if (Number.isFinite(Number(name))) {
@@ -75,14 +77,7 @@ async function main() {
                         break;
                     }
                 } else {
-                    const todoItem = todo.todos.find((t) => t.task === name);
-
-                    if (!todoItem) {
-                        console.error("Todo not found");
-                        break;
-                    }
-
-                    id = todoItem.id;
+                    id = todo.find(name);
                 }
 
                 todo.delete(id);
@@ -90,7 +85,7 @@ async function main() {
             }
 
             case 'clear': {
-                console.log("will be added");
+                todo.clear();
                 break;
             }
 
