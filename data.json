@@ -1,14 +1,8 @@
 [
   {
     "id": 1,
-    "task": "program stuff",
+    "task": "program today",
     "completed": true,
-    "createdAt": "2026-06-20T23:16:02.794Z"
-  },
-  {
-    "id": 2,
-    "task": "do art",
-    "completed": false,
-    "createdAt": "2026-06-20T23:16:21.555Z"
+    "createdAt": "2026-06-21T09:03:06.148Z"
   }
 ]

@@ -1,10 +1,14 @@
 import todo from "./list.js";
 
 async function main() {
+    const debugMode = process.env.DEBUG === "1" ? true : false;
+
     try {
-        const command = process.argv[2] || "help";
+        const command = process.argv[2] || "invalid";
+
         switch (command.trim().toLowerCase()) {
-            case 'help':
+
+            case 'help': {
                 console.log(`
     TODO CLI
 
@@ -12,45 +16,100 @@ async function main() {
         node app.js <command> [args]
 
     COMMAND:
-        add <task>      Add a new todo
-        list            Show all todos
-        done <id>       Mark todos as done
-        delete <id>     Delete a todo
-        help            show this help menu
-    `)
+        add <task>          Add a new todo
+        list                Show all todos
+        done <id|name>      Mark todos as done
+        delete <id|name>    Delete a todo
+        clear               Delete all todos
+        help                show this help menu
+    `);
                 break;
-            case 'add':
-                const newItem = process.argv[3];
-                if (!newItem) {
+            }
+
+            case 'add': {
+                const item = process.argv[3];
+
+                if (!item) {
                     throw new Error("You must specify the task name");
                 }
-                todo.add(newItem);
+
+                todo.add(item);
                 break;
-            case 'done':
-                const id = process.argv[3];
-                if (!id) {
-                    throw new Error("You must specify the ID");
-                } else if (Number.isNaN(id) || id < 0) {
-                    console.error("ID must be a number that is 0 or bigger than 0");
-                    return;
+            }
+
+            case 'done': {
+                const name = process.argv[3];
+                let id;
+
+                if (Number.isFinite(Number(name))) {
+                    id = Number(name);
+
+                    if (id < 0) {
+                        console.error("ID must be bigger than zero");
+                        break;
+                    }
+                } else {
+                    const todoItem = todo.todos.find((t) => t.task === name);
+
+                    if (!todoItem) {
+                        console.error("Todo not found");
+                        break;
+                    }
+
+                    id = todoItem.id;
                 }
+
                 todo.done(id);
                 break;
-            case 'delete':
-                const id2 = process.argv[3];
-                if (!id2) {
-                    throw new Error("You must specify the ID");
-                } else if (Number.isNaN(id2) || id2 < 0) {
-                    console.error("ID must be a number that is 0 or bigger than 0");
-                    return;
+            }
+
+            case 'delete': {
+                const name = process.argv[3];
+                let id;
+
+                if (Number.isFinite(Number(name))) {
+                    id = Number(name);
+
+                    if (id < 0) {
+                        console.error("ID must be bigger than zero");
+                        break;
+                    }
+                } else {
+                    const todoItem = todo.todos.find((t) => t.task === name);
+
+                    if (!todoItem) {
+                        console.error("Todo not found");
+                        break;
+                    }
+
+                    id = todoItem.id;
                 }
-                todo.delete(id2);
+
+                todo.delete(id);
                 break;
-            case 'list':
-                todo.list(); 
+            }
+
+            case 'clear': {
+                console.log("will be added");
+                break;
+            }
+
+            case 'list': {
+                todo.list();
+                break;
+            }
+
+            default: {
+                throw new Error("Invalid command");
+            }
         }
+
     } catch (e) {
-        console.log("error:", e.message);
+        if (debugMode) {
+            console.log("detailed error:\n", e);
+        } else {
+            console.log("error:", e.message);
+        }
     }
 }
 
