@@ -7,6 +7,7 @@ import { hideBin } from 'yargs/helpers';
 import yargs from "yargs";
 import readline from "readline";
 import chalk from "chalk";
+
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -46,7 +47,7 @@ async function main() {
                     if (!debugMode) {
                         todo.list()
                     } else {
-                        todo.debugList(); 
+                        todo.debugList();
                     }
                 }
             )
@@ -119,6 +120,24 @@ async function main() {
                     todo.clear()
                 }
             )
+        yargs(hideBin(process.argv))
+            .help(false)
+            .version(false)
+            .command('add [task]', 'add a new todo', {}, () => { })
+            .command('list', 'show all todos', {}, () => { })
+            .fail((msg, err, yargs) => {
+                console.log(customRed(msg));
+                console.log('\nCustom help:\n');
+
+                console.log(chalk.green('Commands:'));
+                console.log(`  ${chalk.yellow('add [task]')}   add a new todo`);
+                console.log(`  ${chalk.yellow('list')}         show all todos`);
+                console.log(`  ${chalk.yellow('done [id]')}    mark todo as done`);
+                console.log(`  ${chalk.yellow('delete [id]')}  delete a todo`);
+                console.log(`  ${chalk.yellow('clear')}        delete all todos`);
+
+                process.exit(1);
+            })
             .completion('completion', 'Generate completion script', () => {
                 return ['add', 'list', 'done', 'delete', 'clear', 'help']
             })

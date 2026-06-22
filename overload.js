@@ -1,10 +1,10 @@
 import chalk from "chalk";
 
-export const customRed = chalk.rgb(255, 0, 0);
-export const customGreen = chalk.rgb(0, 255, 0);
-export const customGrey = chalk.rgb(50, 50, 50);
-export const customWhite = chalk.rgb(255, 255, 255);
-export const customYellow = chalk.rgb(255, 255, 0); 
+export const customRed = chalk.rgb(248, 113, 113);
+export const customGreen = chalk.rgb(74, 222, 128);
+export const customGrey = chalk.rgb(148, 163, 184);
+export const customWhite = chalk.rgb(241, 245, 249);
+export const customYellow = chalk.rgb(250, 204, 21);
 
 const originalError = console.error;
 console.error = function (...args) {
