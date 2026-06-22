@@ -46,6 +46,20 @@ class Todolist {
     get #activeTodos() {
         return this.#todos.filter(t => !t.deleted);
     }
+    #humanReadableDiff(todo) {
+        const createdTime = new Date(todo.createdAt).getTime();
+        const createdDiff = Date.now() - createdTime;
+
+        const createdMin =  createdDiff < 60000 ? Math.floor(createdDiff / 1000) : Math.floor(createdDiff / 60000);
+        const createdIsSec = createdDiff < 60000;
+
+        const completedTime = new Date(todo.completedAt).getTime();
+        const completedDiff = Date.now() - completedTime;
+
+        const completedMin = completedDiff < 60000 ? Math.floor(completedDiff / 1000) : Math.floor(completedDiff / 60000);
+        const CompletedIsSec = completedDiff < 60000;
+        return { createdMin, createdIsSec, completedMin, CompletedIsSec };
+    }
     find(task) {
         const todoItem = this.#activeTodos.find((t) => t.task.toLowerCase() === task.toLowerCase());
         if (!todoItem) {
@@ -61,7 +75,8 @@ class Todolist {
             task,
             completed: false,
             deleted: false,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            completedAt: null
         }
         this.#todos.push(todo);
         this.#saveTodos();
@@ -78,6 +93,7 @@ class Todolist {
             return
         }
         todo.completed = true;
+        todo.completedAt = new Date().toISOString();
         this.#saveTodos();
         console.log(`${todo.task} marked as done! `);
     }
@@ -111,8 +127,12 @@ class Todolist {
         console.log("Your Todos:");
         activeTodos.forEach(todo => {
             const status = todo.completed ? "done" : "not finished";
-            console.log(`${todo.task}  [${todo.id}]  [${status}]`);
-        })
+            const diff = this.#humanReadableDiff(todo);
+            const time = todo.completed
+                ? `done ${diff.completedMin} ${diff.CompletedIsSec ? "seconds" : "minutes"} ago`
+                : `created ${diff.createdMin} ${diff.createdIsSec ? "seconds" : "minutes"} ago`;
+            console.log(`${todo.task} [${todo.id}] [${status}] [${time}]`);
+        });
     }
 }
 
