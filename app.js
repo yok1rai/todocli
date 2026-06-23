@@ -88,7 +88,7 @@ async function interactive() {
                 }
                 const id = resolveTodoId(name);
                 todo.immute(id);
-                break; 
+                break;
             }
             case 'delete': {
                 const name = (await input("Enter ID or name: ")).trim();
@@ -117,6 +117,8 @@ Commands:
   add               add a new todo
   list              show all todos
   done              mark todo as done
+  mute              make todo mutable
+  immute            make todo immutable
   delete            delete a todo
   clear             delete all todos
   exit              exit from the interactive mode
@@ -186,6 +188,44 @@ async function nonInteractive() {
                 }
                 let id = resolveTodoId(name);
                 todo.done(id);
+            }
+        )
+        .command(
+            'mute [id]',
+            'make todo mutable',
+            {},
+            async (argv) => {
+                let name;
+                if (!argv.id) {
+                    name = (await input("mute: ")).trim();
+                    if (!name) {
+                        console.error("no task given");
+                        return;
+                    }
+                } else {
+                    name = argv.id;
+                }
+                let id = resolveTodoId(name);
+                todo.mute(id);
+            }
+        )
+        .command(
+            'immute [id]',
+            'make todo immutable',
+            {},
+            async (argv) => {
+                let name;
+                if (!argv.id) {
+                    name = (await input("immute: ")).trim();
+                    if (!name) {
+                        console.error("no task given");
+                        return;
+                    }
+                } else {
+                    name = argv.id; 
+                }
+                let id = resolveTodoId(name);
+                todo.immute(id);
             }
         )
         .command(
