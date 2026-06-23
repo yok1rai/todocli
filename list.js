@@ -41,6 +41,9 @@ class Todolist {
     get #activeTodos() {
         return this.#todos.filter(t => !t.deleted);
     }
+    get #deletedTodos() {
+        return this.#todos.filter(t => t.deleted);
+    }
     #humanReadableDiff(todo) {
         const createdTime = new Date(todo.createdAt).getTime();
         const createdDiff = Date.now() - createdTime;
@@ -57,6 +60,13 @@ class Todolist {
     }
     find(task) {
         const todoItem = this.#activeTodos.find((t) => t.task.toLowerCase() === task.toLowerCase());
+        if (!todoItem) {
+            return;
+        }
+        return todoItem.id;
+    }
+    deletedFind(task) {
+        const todoItem = this.#deletedTodos.find((t) => t.task.toLowerCase() === task.toLowerCase());
         if (!todoItem) {
             return;
         }
@@ -148,6 +158,20 @@ class Todolist {
         }
         this.#saveTodos();
     }
+    recover(id) {
+        if (id < 0) {
+            console.error("ID cannot be less than 0");
+            return;
+        }
+        const todo = this.#deletedTodos.find(t => t.id === Number(id));
+        if (!todo) {
+            console.error("Todo not found or not deleted");
+            return;
+        }
+        todo.deleted = false;
+        this.#saveTodos();
+        console.log(`"${todo.task}" is recovered`)
+    }
     delete(id) {
         if (id < 0) {
             console.error("ID cannot be less than 0");
@@ -183,7 +207,7 @@ class Todolist {
             return;
         }
         this.#todos = [];
-        this.#saveTodos(); 
+        this.#saveTodos();
         console.log("file is cleared");
     }
     list() {

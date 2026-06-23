@@ -75,6 +75,7 @@ async function interactive() {
 
                 if (!name) {
                     console.error("id or name cannot be empty");
+                    continue;
                 }
                 const id = resolveTodoId(name);
                 todo.mute(id);
@@ -85,9 +86,20 @@ async function interactive() {
 
                 if (!name) {
                     console.error("id or name cannot be empty");
+                    continue;
                 }
                 const id = resolveTodoId(name);
                 todo.immute(id);
+                break;
+            }
+            case 'recover': {
+                const name = (await input("Enter ID or name: ")).trim();
+                if (!name) {
+                    console.error("id or name cannot be empty");
+                    continue;
+                }
+                const id = resolveTodoId(name, true);
+                todo.recover(id);
                 break;
             }
             case 'delete': {
@@ -113,6 +125,7 @@ async function interactive() {
                 const confirm = (await input("are you sure? ")).trim().toLowerCase();
                 if (confirm !== 'y' && confirm !== 'yes') {
                     console.error("deepclear canceled");
+                    continue;
                 }
                 todo.deepclear();
                 break;
@@ -127,6 +140,7 @@ Commands:
   done              mark todo as done
   mute              make todo mutable
   immute            make todo immutable
+  recover           recover a deleted todo 
   delete            delete a todo
   deepclear         hard-delete the todos
   clear             delete all todos
@@ -235,6 +249,25 @@ async function nonInteractive() {
                 }
                 let id = resolveTodoId(name);
                 todo.immute(id);
+            }
+        )
+        .command(
+            'recover [id]',
+            'recover a deleted todo',
+            {},
+            async (argv) => {
+                let name;
+                if (!argv.id) {
+                    name = (await input("recover: ")).trim();
+                    if (!name) {
+                        console.error("no task given");
+                        return;
+                    }
+                } else {
+                    name = argv.id;
+                }
+                let id = resolveTodoId(name);
+                todo.recover(id);
             }
         )
         .command(
