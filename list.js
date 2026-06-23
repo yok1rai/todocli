@@ -272,7 +272,46 @@ class Todolist {
             console.log(`${task} [${id}] [${status}] [${isDeleted}] [${time}] ${todo.immutable ? "[i]" : ""}`);
         });
     }
-}
+    stat() {
+        const total = this.#todos.length;
+        const active = this.#activeTodos.length;
 
+        const completed = this.#activeTodos.filter(t => t.completed).length;
+        const notCompleted = this.#activeTodos.filter(t => !t.completed);
+        const deleted = this.#deletedTodos.length;
+
+        const completionRate = total === 0
+            ? 0
+            : Math.round((completed / total) * 100);
+
+        let longestTime = null;
+        let diffText = "";
+        if (notCompleted.length > 0) {
+            const now = Date.now();
+
+            longestTime = notCompleted.reduce((oldest, todo) => {
+                return (now - new Date(todo.createdAt)) >
+                    (now - new Date(oldest.createdAt))
+                    ? todo
+                    : oldest;
+            });
+
+            const diff = this.#humanReadableDiff(longestTime);
+
+            diffText = longestTime.completed
+                ? `done ${diff.completedMin} ${diff.CompletedIsSec ? "seconds" : "minutes"} ago`
+                : `created ${diff.createdMin} ${diff.createdIsSec ? "seconds" : "minutes"} ago`;
+        }
+        console.log(`
+Total Todos: ${total}
+Active Todos: ${active}
+Completed Todos: ${completed}
+Deleted Todos: ${deleted}
+Completion Rate: ${completionRate}%
+Longest task: ${longestTime ? longestTime.task : "none"} [${diffText}]
+`);
+    }
+}
+1
 const todo = new Todolist();
 export default todo;

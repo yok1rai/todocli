@@ -66,7 +66,7 @@ async function interactive() {
                     console.error("id or name cannot be empty");
                     continue;
                 }
-                const id = resolveTodoId(name);
+                const id = resolveTodoId(name, false);
                 todo.done(id);
                 break;
             }
@@ -77,7 +77,7 @@ async function interactive() {
                     console.error("id or name cannot be empty");
                     continue;
                 }
-                const id = resolveTodoId(name);
+                const id = resolveTodoId(name, false);
                 todo.mute(id);
                 break;
             }
@@ -88,7 +88,7 @@ async function interactive() {
                     console.error("id or name cannot be empty");
                     continue;
                 }
-                const id = resolveTodoId(name);
+                const id = resolveTodoId(name, false);
                 todo.immute(id);
                 break;
             }
@@ -108,7 +108,7 @@ async function interactive() {
                     console.error("id or name cannot be empty");
                     continue;
                 }
-                const id = resolveTodoId(name);
+                const id = resolveTodoId(name, false);
                 todo.delete(id);
                 break;
             }
@@ -140,12 +140,16 @@ Commands:
   done              mark todo as done
   mute              make todo mutable
   immute            make todo immutable
-  recover           recover a deleted todo 
+  recover           recover a deleted todo
   delete            delete a todo
   deepclear         hard-delete the todos
   clear             delete all todos
   exit              exit from the interactive mode
 `))
+                break;
+            }
+            case 'stat': {
+                todo.stat();
                 break;
             }
             case 'exit':
@@ -209,7 +213,7 @@ async function nonInteractive() {
                 } else {
                     name = argv.id;
                 }
-                let id = resolveTodoId(name);
+                let id = resolveTodoId(name, false);
                 todo.done(id);
             }
         )
@@ -228,7 +232,7 @@ async function nonInteractive() {
                 } else {
                     name = argv.id;
                 }
-                let id = resolveTodoId(name);
+                let id = resolveTodoId(name, false);
                 todo.mute(id);
             }
         )
@@ -247,7 +251,7 @@ async function nonInteractive() {
                 } else {
                     name = argv.id;
                 }
-                let id = resolveTodoId(name);
+                let id = resolveTodoId(name, false);
                 todo.immute(id);
             }
         )
@@ -266,7 +270,7 @@ async function nonInteractive() {
                 } else {
                     name = argv.id;
                 }
-                let id = resolveTodoId(name);
+                let id = resolveTodoId(name, false);
                 todo.recover(id);
             }
         )
@@ -285,7 +289,7 @@ async function nonInteractive() {
                 } else {
                     name = argv.id;
                 }
-                let id = resolveTodoId(name);
+                let id = resolveTodoId(name, false);
                 todo.delete(id);
             }
         )
@@ -311,6 +315,14 @@ async function nonInteractive() {
                 } else {
                     todo.deepclear();
                 }
+            }
+        )
+        .command(
+            'stat',
+            'get statics',
+            {},
+            async () => {
+                todo.stat(); 
             }
         )
         .demandCommand(1, 1, "You must provide a message")
