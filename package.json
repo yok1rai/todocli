@@ -1,6 +1,6 @@
 {
   "name": "todocli",
-  "version": "1.5.0",
+  "version": "2.0",
   "description": "A simple CLI todo app",
   "main": "app.js",
   "bin": {
