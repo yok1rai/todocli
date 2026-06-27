@@ -1,4 +1,4 @@
-import todo from "./list.js"
+import todo from "#core/list.js"
 
 export function resolveTodoId(input, deleted = false) {
     if (Number.isFinite(Number(input))) {

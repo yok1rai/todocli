@@ -1,7 +1,7 @@
-import getConfigPath, { jsonExists } from "./genFile.js";
+import getConfigPath, { jsonExists } from "#cli/genFile.js";
 import fs from "fs";
 import path from "path";
-import "./overload.js";
+import "#core/overload.js";
 import { customGrey, customGreen, customRed, customWhite, customYellow } from "./overload.js"
 import chalk from "chalk";
 
