@@ -59,14 +59,23 @@ class Todolist {
         return { createdMin, createdIsSec, completedMin, CompletedIsSec };
     }
     find(task) {
-        const todoItem = this.#activeTodos.find((t) => t.task.toLowerCase() === task.toLowerCase());
-        if (!todoItem) {
-            return;
+        let todoItem;
+        if (Number.isFinite(Number(task))) {
+            if (Number(task) < 0) {
+                console.error("ID cannot be less than zero");
+                return;
+            }
+            todoItem =  this.#activeTodos.find((t) => t.id === Number(task));
+        } else {
+            todoItem = this.#activeTodos.find((t) => t.task === task);
+            if (!todoItem) {
+                return;
+            }
         }
         return todoItem.id;
     }
     deletedFind(task) {
-        const todoItem = this.#deletedTodos.find((t) => t.task.toLowerCase() === task.toLowerCase());
+        const todoItem = this.#deletedTodos.find((t) => t.task === task);
         if (!todoItem) {
             return;
         }
